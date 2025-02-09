@@ -19,6 +19,8 @@ DB_CONFIG = {
     "user": os.getenv("DB_USERNAME"),
     "password": os.getenv("DB_PASSWORD"),  # `quote_plus()` は不要
     "database": os.getenv("DB_NAME"),
+    "ssl_ca": os.getenv("SSL_CERT_PATH"), 
+    
 }
 
 # CORS の設定
