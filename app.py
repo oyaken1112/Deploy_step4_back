@@ -6,12 +6,21 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from typing import List
 from urllib.parse import quote_plus #追加
+import tempfile #SSL用に追加
 
 # FastAPI アプリの初期化
 app = FastAPI()
 
 # 環境変数をロード
 load_dotenv()
+
+# SSL証明書の復元
+pem_content = os.getenv("DB_SSL_CERT", "").replace("\\n", "\n")
+
+# 一時ファイルに書き出す
+with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".pem") as temp_pem:
+    temp_pem.write(pem_content)
+    temp_pem_path = temp_pem.name  # 一時ファイルのパスを取得
 
 # DB 接続情報の設定
 DB_CONFIG = {
@@ -20,7 +29,7 @@ DB_CONFIG = {
     "user": os.getenv("DB_USERNAME"),
     "password": os.getenv("DB_PASSWORD"),
     "database": os.getenv("DB_NAME"),
-    "ssl_ca": os.getenv("DB_SSL_CERT", "/home/site/wwwroot/DigiCertGlobalRootCA.crt.pem"), 
+    "ssl_ca": temp_pem_path,  # 一時ファイルのパスを指定
 }
 
 # SQLAlchemy 用の DATABASE_URL
