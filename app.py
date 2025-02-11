@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from typing import List
+from urllib.parse import quote_plus #追加
 
 # FastAPI アプリの初期化
 app = FastAPI()
@@ -15,13 +16,15 @@ load_dotenv()
 # DB 接続情報の設定
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT")),  # ← ここで整数に変換
+    "port": int(os.getenv("DB_PORT")),
     "user": os.getenv("DB_USERNAME"),
-    "password": os.getenv("DB_PASSWORD"),  # `quote_plus()` は不要
+    "password": os.getenv("DB_PASSWORD"),
     "database": os.getenv("DB_NAME"),
-    "ssl_ca" : os.getenv("DB_SSL_CERT", "db_control/certs/DigiCertGlobalRootCA.crt.pem"), 
-    
+    "ssl_ca": os.getenv("DB_SSL_CERT", "/home/site/wwwroot/DigiCertGlobalRootCA.crt.pem"), 
 }
+
+# SQLAlchemy 用の DATABASE_URL
+DATABASE_URL = f"mysql+mysqlconnector://{os.getenv('DB_USERNAME')}:{quote_plus(os.getenv('DB_PASSWORD'))}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 
 # CORS の設定
 app.add_middleware(
